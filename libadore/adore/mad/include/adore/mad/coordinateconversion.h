@@ -108,7 +108,7 @@ namespace adore
 			*/
 			static double DegToRad(double deg)
 			{
-				return (deg / 180.00 * PI);
+				return (deg / 180.0000 * PI);
 			}
 			/**
 			* converts radian to degree
@@ -117,7 +117,7 @@ namespace adore
 			*/
 			static double RadToDeg(double rad)
 			{
-				return (rad / PI * 180.00);
+				return (rad / PI * 180.0000);
 			}
 			/**
 			* normalize the radian [-2*pi , 2*pi]

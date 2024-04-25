@@ -440,6 +440,24 @@ namespace adore
 					x += (2 * M_PI);
 				return x - M_PI;
 			}
+
+			/**
+			 * reminder after devision
+			 * @param x is the input
+			 * @param y is the input
+			 * @param return is the normalized input
+			 */
+			template <typename T1,typename T2>
+			static long double mod(T1 x, T2 y)
+			{
+				return x - std::floor(x/y)*y;
+				//if(y=0.0) return x;
+				//else return x - std::floor(x/y)*y;
+
+			}
+
+
+
 			/**
 			 * returns an angle which its jump between consecutive angles is lessthan or equal to pi radians
 			 * @param prev is the input (previous angle)
