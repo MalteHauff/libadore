@@ -104,7 +104,6 @@ namespace apps
             h_A_star->setSize(heigth,width);
             avg_time = 0.0;
             iteration = 1;
-            
 
 
         }
