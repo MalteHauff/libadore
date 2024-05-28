@@ -75,7 +75,7 @@ namespace apps
 
         
         public:
-        GraphSearch(ros::NodeHandle* parentnode)
+        GraphSearch(ros::NodeHandle* parentnode, int8[] data, uint32 height, uint32 width)
         {
             vehicleLength = 3.2;
             vehicleWidth = 1.0; 
@@ -96,9 +96,10 @@ namespace apps
             figure5->show();                               
             Depth = 360 / HeadingResolution;
             cco = new adore::fun::CollisionCheckOffline(vehicleWidth, vehicleLength, HeadingResolution, 10);
-            OG.resize(Width,Length,figure3);
-            NH_GRID.resize(Width,Length,Depth);
-            h_A_star->setSize(Width,Length);
+            //OG.resize(Width,Length,figure3);
+            OG = OccupanyGrid(data, height, width)
+            NH_GRID.resize(height,width,Depth);
+            h_A_star->setSize(heigth,width);
             avg_time = 0.0;
             iteration = 1;
             
