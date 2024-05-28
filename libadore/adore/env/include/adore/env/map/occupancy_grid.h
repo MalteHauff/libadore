@@ -16,7 +16,9 @@
 #include <plotlablib/afigurestub.h>
 #include <plotlablib/figurestubfactory.h>
 #include <adore/apps/if_plotlab/plot_shape.h>
+#include <boost/geometry.hpp>
 #include <boost/container/vector.hpp>
+#include <eigen3/Eigen/Dense>
 //#include <adore/fun
 namespace adore
 {
