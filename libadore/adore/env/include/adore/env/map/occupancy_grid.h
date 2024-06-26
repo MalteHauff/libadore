@@ -19,6 +19,7 @@
 #include <boost/geometry.hpp>
 #include <boost/container/vector.hpp>
 #include <eigen3/Eigen/Dense>
+#include <stdint.h>
 //#include <adore/fun
 namespace adore
 {
@@ -54,21 +55,22 @@ namespace adore
                 typedef boost::container::vector<_Obstacle> obstacleList;
                 obstacleList obstacles;
                 double pi;
-                uint32 width;
-                uint32 height;
-                OccupanyGrid(int8[] data, uint32 h, uint32 w)
+                uint32_t width;
+                uint32_t height;
+                OccupanyGrid(uint32_t h, uint32_t w) //int8_t data[], 
                 {
                     height = h;
                     width = w; 
                     pi = 3.141592653589793;
-                    Grid = Eigen::MatrixXd::Zero(width,length);
+                    Grid = Eigen::MatrixXd::Zero(width,height);
+                    /*
                     for (int r=0; r<Grid.rows(); r++)
                     {                    
                         for(int c=0; c<Grid.cols(); c++)
                         {
                              Grid(r,c) = data[r*Grid.cols()+c];
                         }
-
+                    }*/
                 }
                 boost::container::vector<_Obstacle> get_obstacles()
                 {
