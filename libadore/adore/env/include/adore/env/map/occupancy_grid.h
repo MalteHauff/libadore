@@ -57,7 +57,7 @@ namespace adore
                 double pi;
                 uint32_t width;
                 uint32_t height;
-                void init(uint32_t h, uint32_t w) //int8_t data[], 
+                void init(int data[], uint32_t h, uint32_t w) //int8_t data[], 
                 {
                     height = h;
                     width = w; 
