@@ -78,11 +78,7 @@ namespace apps
 
         
         public:
-<<<<<<< HEAD
         GraphSearch(int8[] data, uint32 height, uint32 width)
-=======
-        void init(ros::NodeHandle* parentnode, int data[], uint32_t height, uint32_t width)
->>>>>>> 097fc6cd643ad6e36a1db04f2f79cea28b7b4c0b
         {
             vehicleLength = 3.2;
             //int[] data;
