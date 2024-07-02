@@ -22,7 +22,7 @@
 #include <adore/fun/collision_check_offline.h>
 //#include <adore/fun/vornoi_diagram.h>
 #include <plotlablib/afigurestub.h>
-#include <geometry_msgs/Pose.h>
+//#include <geometry_msgs/Pose.h>
 //#include <adore/mad/catmull_rom_splines.h>
 #include <boost/geometry.hpp>
 #include <boost/geometry/strategies/transform/matrix_transformers.hpp>
@@ -32,6 +32,7 @@
 #include <adore/fun/trajectory_smoothing.h>
 #include <ctime>
 #include <chrono>
+#include <stdint.h>
 #include <tf/tf.h>
 //#include <tf/quaterion.h>
 
@@ -61,15 +62,15 @@ namespace apps
             int Depth;      
             adore::env::OccupanyGrid OG;
             adore::fun::GRID<adore::fun::Node<nH_Type,double>> NH_GRID;
-            ros::Subscriber StartPose_subscreiber; 
-            ros::Subscriber EndPose_subscreiber; 
+            //ros::Subscriber StartPose_subscreiber; 
+            //ros::Subscriber EndPose_subscreiber; 
             //adore::fun::ArrayFormGrid<adore::fun::Node<nH_Type,double>> NH_GRID;
             adore::fun::Hybrid_A_Star* h_A_star;
             adore::fun::Node<3,double> Start;
             adore::fun::Node<3,double> End;
             bool validStart, validEnd;
             adore::fun::CollisionCheckOffline* cco;
-            ros::NodeHandle* node_;
+            //ros::NodeHandle* node_;
             fun::TrajectorySmoothing* smoothing;
             double avg_time;
             double vehicleLength, vehicleWidth;
@@ -77,13 +78,13 @@ namespace apps
 
         
         public:
-        GraphSearch(ros::NodeHandle* parentnode, int8[] data, uint32 height, uint32 width)
+        GraphSearch(int8[] data, uint32 height, uint32 width)
         {
             vehicleLength = 3.2;
             vehicleWidth = 1.0; 
             smoothing = new fun::TrajectorySmoothing;
             h_A_star = new adore::fun::Hybrid_A_Star(smoothing);
-            node_ = parentnode;
+            //node_ = parentnode;
             figure3 = fig_factory.createFigureStub(3);
             figure3->showAxis();
             figure3->showGrid();
@@ -116,8 +117,8 @@ namespace apps
 
        //adore::fun::VornoiDiagram::update(figure);
        
-            StartPose_subscreiber= node_->subscribe<geometry_msgs::Pose>("SIM/StartPose",1,&GraphSearch::receiveStartPose,this);
-            EndPose_subscreiber= node_->subscribe<geometry_msgs::Pose>("SIM/EndPose",1,&GraphSearch::receiveEndPose,this);
+            //StartPose_subscreiber= node_->subscribe<geometry_msgs::Pose>("SIM/StartPose",1,&GraphSearch::receiveStartPose,this);
+            //EndPose_subscreiber= node_->subscribe<geometry_msgs::Pose>("SIM/EndPose",1,&GraphSearch::receiveEndPose,this);
             
             while(iteration<2 && validStart && validEnd)
             {
@@ -140,21 +141,7 @@ namespace apps
                 
             }
 
-        }
-        void receiveStartPose(geometry_msgs::Pose msg)
-        {
-                    double r,p,y;
-                    tf::Matrix3x3(tf::Quaternion(msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w)).getRPY(r,p,y);
-                    validStart = Start.setPosition(msg.position.x,msg.position.y,y,Width,Length,Depth,adore::mad::CoordinateConversion::DegToRad(HeadingResolution), figure3);
-                    //Start.print();
-        }  
-        void receiveEndPose(geometry_msgs::Pose msg)
-        {
-                    double r,p,y;
-                    tf::Matrix3x3(tf::Quaternion(msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w)).getRPY(r,p,y);
-                    validEnd = End.setPosition(msg.position.x,msg.position.y,y,Width,Length,Depth, adore::mad::CoordinateConversion::DegToRad(HeadingResolution),  figure3);
-                    //End.print();
-        }              
+        }          
     };
 }
 }
