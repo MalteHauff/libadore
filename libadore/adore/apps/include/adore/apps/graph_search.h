@@ -74,7 +74,7 @@ namespace apps
             fun::TrajectorySmoothing* smoothing;
             double avg_time;
             double vehicleLength, vehicleWidth;
-            int iteration;
+            int iteration
 
         
         public:
