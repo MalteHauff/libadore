@@ -33,7 +33,7 @@
 #include <ctime>
 #include <chrono>
 #include <stdint.h>
-#include <tf/tf.h>
+//#include <tf/tf.h>
 //#include <tf/quaterion.h>
 
 namespace adore
@@ -74,11 +74,11 @@ namespace apps
             fun::TrajectorySmoothing* smoothing;
             double avg_time;
             double vehicleLength, vehicleWidth;
-            int iteration
+            int iteration;
 
         
         public:
-        GraphSearch(int8[] data, uint32 height, uint32 width)
+        void init(int data[], uint32_t height, uint32_t width)
         {
             vehicleLength = 3.2;
             //int[] data;
