@@ -80,6 +80,7 @@ namespace apps
         public:
         void init(int data[], uint32_t height, uint32_t width)
         {
+            std::cout<<"init search algo start"<<std::endl;  
             vehicleLength = 3.2;
             //int[] data;
             vehicleWidth = 1.0; 
@@ -106,18 +107,13 @@ namespace apps
             h_A_star->setSize(height,width);
             avg_time = 0.0;
             iteration = 1;
-
+            std::cout<<"init search algo end"<<std::endl;
+            
 
         }
         void update()
         {
-        //--------------------------
-               
-       
-        //-------------------------
-
-       //adore::fun::VornoiDiagram::update(figure);
-       
+            std::cout<<"start update"<<std::endl;
             //StartPose_subscreiber= node_->subscribe<geometry_msgs::Pose>("SIM/StartPose",1,&GraphSearch::receiveStartPose,this);
             //EndPose_subscreiber= node_->subscribe<geometry_msgs::Pose>("SIM/EndPose",1,&GraphSearch::receiveEndPose,this);
             
