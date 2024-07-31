@@ -78,7 +78,7 @@ namespace apps
 
         
         public:
-        void init(int data[], uint32_t height, uint32_t width)
+        void init_gs(int data[], uint32_t height, uint32_t width)
         {
             std::cout<<"init search algo start"<<std::endl;  
             vehicleLength = 3.2;
