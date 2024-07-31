@@ -85,7 +85,9 @@ namespace apps
             vehicleWidth = 1.0; 
             smoothing = new fun::TrajectorySmoothing;
             h_A_star = new adore::fun::Hybrid_A_Star(smoothing);
+            std::cout<<"start fig init"<<std::endl;
             //node_ = parentnode;
+            /*
             figure3 = fig_factory.createFigureStub(3);
             figure3->showAxis();
             figure3->showGrid();
@@ -97,7 +99,7 @@ namespace apps
             figure5 = fig_factory.createFigureStub(5);
             figure5->showAxis();
             figure5->showGrid();
-            figure5->show();               
+            figure5->show(); */              
             Depth = 360 / HeadingResolution;
             std ::cout<<"figure init"<<std::endl;
             cco = new adore::fun::CollisionCheckOffline(vehicleWidth, vehicleLength, HeadingResolution, 10);
