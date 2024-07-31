@@ -82,7 +82,6 @@ namespace apps
         {
             std::cout<<"init search algo start"<<std::endl;  
             vehicleLength = 3.2;
-            //int[] data;
             vehicleWidth = 1.0; 
             smoothing = new fun::TrajectorySmoothing;
             h_A_star = new adore::fun::Hybrid_A_Star(smoothing);
@@ -100,9 +99,12 @@ namespace apps
             figure5->showGrid();
             figure5->show();               
             Depth = 360 / HeadingResolution;
+            std ::cout<<"figure init"<<std::endl;
             cco = new adore::fun::CollisionCheckOffline(vehicleWidth, vehicleLength, HeadingResolution, 10);
+            std ::cout<<"cco init"<<std::endl;
             //OG.resize(Width,Length,figure3);
             OG.init(data, height, width);
+            std ::cout<<"og init"<<std::endl;
             NH_GRID.resize(height,width,Depth);
             h_A_star->setSize(height,width);
             avg_time = 0.0;
