@@ -83,7 +83,9 @@ namespace apps
             std::cout<<"init search algo start"<<std::endl;  
             vehicleLength = 3.2;
             vehicleWidth = 1.0; 
+            std::cout<<"start smooth init"<<std::endl;
             smoothing = new fun::TrajectorySmoothing;
+            std::cout<<"start a_start init"<<std::endl;
             h_A_star = new adore::fun::Hybrid_A_Star(smoothing);
             std::cout<<"start fig init"<<std::endl;
             //node_ = parentnode;
