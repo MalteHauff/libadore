@@ -59,12 +59,16 @@ namespace adore
                 uint32_t height;
                 void init(int data[], uint32_t h, uint32_t w) //int8_t data[], 
                 {
+                    std::cout<<"start og init"<<std::endl;  
                     height = h;
                     width = w; 
                     pi = 3.141592653589793;
+                    std::cout<< height << width <<std::endl;
                     Grid = Eigen::MatrixXd::Zero(width,height);
+                    std::cout << "matrix init finished" << std::endl;
                     /*
                     for (int r=0; r<Grid.rows(); r++)
+                    
                     {                    
                         for(int c=0; c<Grid.cols(); c++)
                         {

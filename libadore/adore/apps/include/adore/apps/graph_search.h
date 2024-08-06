@@ -89,23 +89,25 @@ namespace apps
             h_A_star = new adore::fun::Hybrid_A_Star(smoothing);
             std::cout<<"start fig init"<<std::endl;
             //node_ = parentnode;
-            /*
+        
             figure3 = fig_factory.createFigureStub(3);
             figure3->showAxis();
             figure3->showGrid();
             figure3->show();  
             figure4 = fig_factory.createFigureStub(4);
+            std::cout<<"figure init between"<<std::endl;
             figure4->showAxis();
             figure4->showGrid();
             figure4->show();   
             figure5 = fig_factory.createFigureStub(5);
             figure5->showAxis();
             figure5->showGrid();
-            figure5->show(); */              
-            Depth = 360 / HeadingResolution;
+            figure5->show();              
+            Depth = 360 / HeadingResolution;ma
             std ::cout<<"figure init"<<std::endl;
             cco = new adore::fun::CollisionCheckOffline(vehicleWidth, vehicleLength, HeadingResolution, 10);
             std ::cout<<"cco init"<<std::endl;
+            std::cout<<height << width <<std::endl;
             //OG.resize(Width,Length,figure3);
             OG.init(data, height, width);
             std ::cout<<"og init"<<std::endl;
