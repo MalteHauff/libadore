@@ -82,6 +82,7 @@ namespace apps
         void init_gs(int data[], uint32_t height, uint32_t width)
         {
             std::cout<<"init search ss algo start test"<<std::endl;  
+            std::cout<< "test" <<std::endl;
             vehicleLength = 3.2;
             vehicleWidth = 1.0; 
             std::cout<<"start smooth init"<<std::endl;
