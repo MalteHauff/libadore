@@ -73,14 +73,15 @@ namespace apps
             //ros::NodeHandle* node_;
             fun::TrajectorySmoothing* smoothing;
             double avg_time;
-            double vehicleLength, vehicleWidth;
+            double vehicleLength = 0.0;
+            double vehicleWidth = 0.0;
             int iteration;
 
         
         public:
         void init_gs(int data[], uint32_t height, uint32_t width)
         {
-            std::cout<<"init search algo start"<<std::endl;  
+            std::cout<<"init search ss algo start test"<<std::endl;  
             vehicleLength = 3.2;
             vehicleWidth = 1.0; 
             std::cout<<"start smooth init"<<std::endl;
@@ -103,7 +104,7 @@ namespace apps
             figure5->showAxis();
             figure5->showGrid();
             figure5->show();              
-            Depth = 360 / HeadingResolution;ma
+            Depth = 360 / HeadingResolution;
             std ::cout<<"figure init"<<std::endl;
             cco = new adore::fun::CollisionCheckOffline(vehicleWidth, vehicleLength, HeadingResolution, 10);
             std ::cout<<"cco init"<<std::endl;
