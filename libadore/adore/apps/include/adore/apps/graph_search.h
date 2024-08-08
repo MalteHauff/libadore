@@ -45,8 +45,7 @@ namespace apps
      */
     class GraphSearch
     {
-        private:
-        //typedef boost::geometry::model::point<double,2,boost::geometry::cs::cartesian> Vector;
+        public:        //typedef boost::geometry::model::point<double,2,boost::geometry::cs::cartesian> Vector;
             DLR_TS::PlotLab::FigureStubFactory fig_factory;
             DLR_TS::PlotLab::AFigureStub* figure3;  
             DLR_TS::PlotLab::AFigureStub* figure4; 
@@ -73,55 +72,51 @@ namespace apps
             //ros::NodeHandle* node_;
             fun::TrajectorySmoothing* smoothing;
             double avg_time;
-            double vehicleLength = 0.0;
-            double vehicleWidth = 0.0;
+            float vehicleLength = 0.0;
+            float vehicleWidth = 0.0;
             int iteration;
-
-        
-        public:
-        void init_gs(int data[], uint32_t height, uint32_t width)
-        {
-            std::cout<<"init search ss algo start test"<<std::endl;  
-            std::cout<< "test" <<std::endl;
-            //vehicleLength = 3.2;
-            //vehicleWidth = 1.0; 
-            std::cout<<"start smooth init"<<std::endl;
-            smoothing = new fun::TrajectorySmoothing;
-            std::cout<<"start a_start init"<<std::endl;
-            h_A_star = new adore::fun::Hybrid_A_Star(smoothing);
-            std::cout<<"start fig init"<<std::endl;
-            //node_ = parentnode;
-        
-            figure3 = fig_factory.createFigureStub(3);
-            figure3->showAxis();
-            figure3->showGrid();
-            figure3->show();  
-            figure4 = fig_factory.createFigureStub(4);
-            std::cout<<"figure init between"<<std::endl;
-            figure4->showAxis();
-            figure4->showGrid();
-            figure4->show();   
-            figure5 = fig_factory.createFigureStub(5);
-            figure5->showAxis();
-            figure5->showGrid();
-            figure5->show();              
-            Depth = 360 / HeadingResolution;
-            std ::cout<<"figure init"<<std::endl;
-            cco = new adore::fun::CollisionCheckOffline(vehicleWidth, vehicleLength, HeadingResolution, 10);
-            std ::cout<<"cco init"<<std::endl;
-            std::cout<<height << width <<std::endl;
-            //OG.resize(Width,Length,figure3);
-            OG.init(data, height, width);
-            std ::cout<<"og init"<<std::endl;
-            NH_GRID.resize(height,width,Depth);
-            h_A_star->setSize(height,width);
-            avg_time = 0.0;
-            iteration = 1;
-            std::cout<<"init search algo end"<<std::endl;
+            void init_gs(int data[], uint32_t height, uint32_t width)
+            {
+                std::cout<<"init search ss algo start test"<<std::endl;  
+                std::cout<< "test" <<std::endl;
+                //vehicleLength = 3.2;
+                //vehicleWidth = 1.0; 
+                std::cout<<"start smooth init"<<std::endl;
+                smoothing = new fun::TrajectorySmoothing;
+                std::cout<<"start a_start init"<<std::endl;
+                h_A_star = new adore::fun::Hybrid_A_Star(smoothing);
+                std::cout<<"start fig init"<<std::endl;
+                //node_ = parentnode;
             
+                figure3 = fig_factory.createFigureStub(3);
+                figure3->showAxis();
+                figure3->showGrid();
+                figure3->show();  
+                figure4 = fig_factory.createFigureStub(4);
+                figure4->showAxis();
+                figure4->showGrid();
+                figure4->show();   
+                figure5 = fig_factory.createFigureStub(5);
+                figure5->showAxis();
+                figure5->showGrid();
+                figure5->show();              
+                Depth = 360 / HeadingResolution;
+                std ::cout<<"figure init"<<std::endl;
+                cco = new adore::fun::CollisionCheckOffline(2, 2, HeadingResolution, 10);
+                std ::cout<<"cco init"<<std::endl;
+                std::cout<<height << width <<std::endl;
+                //OG.resize(Width,Length,figure3);
+                OG.init(data, height, width);
+                std ::cout<<"og init"<<std::endl;
+                NH_GRID.resize(height,width,Depth);
+                h_A_star->setSize(height,width);
+                avg_time = 0.0;
+                iteration = 1;
+                std::cout<<"init search algo end"<<std::endl;
+                
 
-        }
-        void update()
+            }
+            void update()
         {
             std::cout<<"start update"<<std::endl;
             //StartPose_subscreiber= node_->subscribe<geometry_msgs::Pose>("SIM/StartPose",1,&GraphSearch::receiveStartPose,this);
