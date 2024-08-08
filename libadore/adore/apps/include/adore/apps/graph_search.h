@@ -85,18 +85,21 @@ namespace apps
                 smoothing = new fun::TrajectorySmoothing;
                 std::cout<<"start a_start init"<<std::endl;
                 h_A_star = new adore::fun::Hybrid_A_Star(smoothing);
-                std::cout<<"start fig init"<<std::endl;
+                std::cout<<"start fig init tesst"<<std::endl;
                 //node_ = parentnode;
             
                 figure3 = fig_factory.createFigureStub(3);
+                std::cout<<"fig3"<<std::endl;
                 figure3->showAxis();
                 figure3->showGrid();
                 figure3->show();  
                 figure4 = fig_factory.createFigureStub(4);
+                std::cout<<"fig4"<<std::endl;
                 figure4->showAxis();
                 figure4->showGrid();
                 figure4->show();   
                 figure5 = fig_factory.createFigureStub(5);
+                std::cout<<"fig4"<<std::endl;
                 figure5->showAxis();
                 figure5->showGrid();
                 figure5->show();              
