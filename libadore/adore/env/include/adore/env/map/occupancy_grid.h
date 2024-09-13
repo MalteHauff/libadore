@@ -64,9 +64,9 @@ namespace adore
                     width = w; 
                     pi = 3.141592653589793;
                     std::cout<< height << width <<std::endl;
-                    Grid = Eigen::MatrixXd::Zero(width,height);
+                    Grid = Eigen::MatrixXd::Zero(height,width); //
                     std::cout << "matrix init finished" << std::endl;
-                    /*
+                    
                     for (int r=0; r<Grid.rows(); r++)
                     
                     {                    
@@ -74,7 +74,7 @@ namespace adore
                         {
                              Grid(r,c) = data[r*Grid.cols()+c];
                         }
-                    }*/
+                    }
                 }
                 boost::container::vector<_Obstacle> get_obstacles()
                 {
@@ -83,7 +83,8 @@ namespace adore
                 void resize(int Width, int Length,DLR_TS::PlotLab::AFigureStub* figure =nullptr)
                 {
                     figure->clear();  
-                    Grid = Eigen::MatrixXd::Zero(Width,Length);
+                    //Grid = Eigen::MatrixXd::Zero(Width,Length);
+                    /*
                     _Obstacle obst_0;
                     obst_0.ID = 0;
                     obst_0.x = 16.;
@@ -101,13 +102,13 @@ namespace adore
                     obst_1.width = 2.;
                     obst_1.alpha = 0.37;
                     obst_1.poly = rotation(&obst_1,figure); 
-                    obstacles.push_back(obst_1);                
+                    obstacles.push_back(obst_1);     */           
 
 
 
 
 
-                    obstacle();
+                    //obstacle();
                 if(figure != nullptr)
                 {
                     PLOT(figure);
