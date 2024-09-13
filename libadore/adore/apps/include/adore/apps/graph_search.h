@@ -78,7 +78,7 @@ namespace apps
             int iteration;
             GraphSearch(int data[], uint32_t height, uint32_t width, ros::NodeHandle* parentnode)
             {
-                std::cout<<"init search ss algo start test 3"<<std::endl;  
+                std::cout<<"init search"<<std::endl;  
                 std::cout<< "test" <<std::endl;
                 vehicleLength = 3.2;
                 vehicleWidth = 1.0; 
@@ -89,9 +89,6 @@ namespace apps
                 std::cout<<"start fig init tesst"<<std::endl;
                 node_ = parentnode;
                 std::cout<<"heigth: " << height << "  width: " << width << std::endl;
-                for(int i=0; i < height * width; i++){
-                    std::cout<<data[i];
-                }
             
             
                 figure3 = fig_factory.createFigureStub(3);
