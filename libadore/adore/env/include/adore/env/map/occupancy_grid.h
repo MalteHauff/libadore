@@ -19,7 +19,10 @@
 #include <boost/geometry.hpp>
 #include <boost/container/vector.hpp>
 #include <eigen3/Eigen/Dense>
+
+#include <nav_msgs/OccupancyGrid.h>
 #include <stdint.h>
+
 //#include <adore/fun
 namespace adore
 {
@@ -57,7 +60,7 @@ namespace adore
                 double pi;
                 uint32_t width;
                 uint32_t height;
-                void init(int data[], uint32_t h, uint32_t w) //int8_t data[], 
+                void init(const nav_msgs::OccupancyGrid::ConstPtr &msg, uint32_t h, uint32_t w) //int8_t data[], 
                 {
                     std::cout<<"start og init"<<std::endl;  
                     height = h;
@@ -72,10 +75,20 @@ namespace adore
                     {                    
                         for(int c=0; c<Grid.cols(); c++)
                         {
-                             Grid(r,c) = data[r*Grid.cols()+c];
+                            if(msg->data[r*Grid.cols()+c]==0){
+                                Grid(r,c) = 100;//msg->data[r*Grid.cols()+c];
+                            }
+                            else if(msg->data[r*Grid.cols()+c]==-2){
+                                Grid(r,c) = 0;//msg->data[r*Grid.cols()+c];
+                            }
+                            else{
+                                Grid(r,c) = -1;//msg->data[r*Grid.cols()+c];
+                            }
+                            //std::cout<<Grid(r,c)<<std::endl;
                         }
                     }
                 }
+                
                 boost::container::vector<_Obstacle> get_obstacles()
                 {
                     return obstacles;
@@ -103,12 +116,7 @@ namespace adore
                     obst_1.alpha = 0.37;
                     obst_1.poly = rotation(&obst_1,figure); 
                     obstacles.push_back(obst_1);     */           
-
-
-
-
-
-                    //obstacle();
+                    obstacle();
                 if(figure != nullptr)
                 {
                     PLOT(figure);
@@ -195,14 +203,20 @@ namespace adore
                     return sqrt((length/1.4142)*soft_rectangle_rr*cos((beta))*(length/1.4142)*soft_rectangle_rr*cos((beta))  +((width/1.4142)*soft_rectangle_rr*sin((beta)))*((width/2.)*soft_rectangle_rr*sin((beta))));                
                 }
                 static void transformation(double &x, double &y,double theta, double x_o, double y_o)
-
-            {
-                x = x_o  *cos(theta) - y_o  * sin(theta) ;
-                y = x_o  *sin(theta) + y_o  * cos(theta) ;
-            }            
+                {
+                    x = x_o  *cos(theta) - y_o  * sin(theta) ;
+                    y = x_o  *sin(theta) + y_o  * cos(theta) ;
+                } 
+                bool check_valid_position(int row, int col){
+                    if(! point_inside(row, col)) return false;
+                    return Grid(row,col) == 0;
+                }
+                bool point_inside(int row, int col){
+                    return row >= 0 && row < width && col >= 0 && col <= height;
+                }          
             private:
-                std::string GREEN= "LineColor=0.75,1.,0.75;LineWidth=2";
-                std::string RED= "LineColor=0.,0.,0.;LineWidth=3";
+                std::string GREEN= "LineColor=0.,1.,0.;LineWidth=5";
+                std::string RED= "LineColor=1.,0.,0.;LineWidth=5";
                 void polar2Cartesian(double &x, double &y, double r, double beta)
                 {
                     x = r* cos(beta);
@@ -240,9 +254,13 @@ namespace adore
                             ss.clear();
                             ss.str("");
                             ss << "f"<<r*Grid.cols()+c;
-                            if(Grid(r,c)) PLOT::plotPosition(ss.str(),c,r,figure,RED,0.05);
+                            if(Grid(r,c)==100) {
+                                PLOT::plotPosition(ss.str(),c,r,figure,RED,0.1);
+                            }
                             //std::cout<<"\n"<<r<<"\t"<<c<<"\t"<<r*Grid.cols()+c;
-                            else PLOT::plotPosition(ss.str(),c,r,figure,GREEN,0.05);
+                            else if (Grid(r,c)==0) {
+                                PLOT::plotPosition(ss.str(),c,r,figure,GREEN,0.1);
+                            }
                         }
 
                     }
@@ -278,7 +296,7 @@ namespace adore
 
             } 
             
-
+                
 
 
         };

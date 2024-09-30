@@ -18,6 +18,8 @@
 #include <adore/fun/node.h>
 #include <adore/fun/search_grid.h>
 #include <adore/fun/hybrid_A_star.h>
+
+#include <nav_msgs/OccupancyGrid.h>
 #include <plotlablib/figurestubfactory.h>
 #include <adore/fun/collision_check_offline.h>
 //#include <adore/fun/vornoi_diagram.h>
@@ -54,9 +56,9 @@ namespace apps
             int time1, time2;
             std::chrono::system_clock::time_point  start;
             std::chrono::system_clock::time_point  end;        
-            static const int Length = 80; //73;
-            static const int Width = 20;//20;  
-            static const int HeadingResolution = 5;  
+            int grid_width = 80; //73;
+            int grid_height = 20;//20;  
+            static const int HeadingResolution = 1;  //5
             static const int nH_Type = 3;  //non holonomic
             static const int H_Type = 2;  //holonomic
             int Depth;      
@@ -76,44 +78,45 @@ namespace apps
             float vehicleLength = 0.0;
             float vehicleWidth = 0.0;
             int iteration;
-            GraphSearch(int data[], uint32_t height, uint32_t width, ros::NodeHandle* parentnode)
+            GraphSearch(const nav_msgs::OccupancyGrid::ConstPtr &msg, int test, uint32_t height, uint32_t width, ros::NodeHandle* parentnode)
             {
-                std::cout<<"init search"<<std::endl;  
-                std::cout<< "test" <<std::endl;
+                std::cout<<"msg data"<<std::endl;
+                std::cout<<"\n \n init search"<<std::endl;
+                grid_height = height;
+                grid_width = width;  
+                //std::cout<< "test" <<std::endl;
                 vehicleLength = 3.2;
                 vehicleWidth = 1.0; 
-                std::cout<<"start smooth init"<<std::endl;
+                //std::cout<<"start smooth init"<<std::endl;
                 smoothing = new fun::TrajectorySmoothing;
-                std::cout<<"start a_start init"<<std::endl;
+                //std::cout<<"start a_start init"<<std::endl;
                 h_A_star = new adore::fun::Hybrid_A_Star(smoothing);
-                std::cout<<"start fig init tesst"<<std::endl;
+                //std::cout<<"start fig init tesst"<<std::endl;
                 node_ = parentnode;
                 std::cout<<"heigth: " << height << "  width: " << width << std::endl;
             
             
                 figure3 = fig_factory.createFigureStub(3);
-                std::cout<<"fig3"<<std::endl;
+                //std::cout<<"fig3"<<std::endl;
                 figure3->showAxis();
                 figure3->showGrid();
                 figure3->show();  
                 figure4 = fig_factory.createFigureStub(4);
-                std::cout<<"fig4"<<std::endl;
+                //std::cout<<"fig4"<<std::endl;
                 figure4->showAxis();
                 figure4->showGrid();
                 figure4->show();   
                 figure5 = fig_factory.createFigureStub(5);
-                std::cout<<"fig4"<<std::endl;
                 figure5->showAxis();
                 figure5->showGrid();
                 figure5->show();              
                 Depth = 360 / HeadingResolution;
-                std ::cout<<"figure init"<<std::endl;
                 cco = new adore::fun::CollisionCheckOffline(2, 2, HeadingResolution, 10);
                 std ::cout<<"cco init"<<std::endl;
                 std::cout<<height << width <<std::endl;
                 
-                OG.init(data, height, width);
-                OG.resize(Width,Length,figure3);
+                OG.init(msg, grid_height, grid_width);
+                OG.resize(grid_height,grid_width,figure3);
                 std ::cout<<"og init"<<std::endl;
                 NH_GRID.resize(height,width,Depth);
                 h_A_star->setSize(height,width);
@@ -128,11 +131,13 @@ namespace apps
             std::cout<<"start update"<<std::endl;
             StartPose_subscreiber= node_->subscribe<geometry_msgs::Pose>("StartPose",1,&GraphSearch::receiveStartPose,this);
             EndPose_subscreiber= node_->subscribe<geometry_msgs::Pose>("EndPose",1,&GraphSearch::receiveEndPose,this);
-            std::cout<<"valid  " << validStart << validEnd<<std::endl; 
+            std::cout<<"valid  " << validStart << validEnd<<iteration<<std::endl; 
+
             while(iteration<2 && validStart && validEnd)
             {
 
                 std::cout<<"\n ITERATION: "<<iteration;
+
                 start = std::chrono::system_clock::now();
                 time1 = 0.0;
                 time2 = 0.0;
@@ -152,19 +157,29 @@ namespace apps
 
         }
 
-          void receiveStartPose(geometry_msgs::Pose msg)
+        void receiveStartPose(geometry_msgs::Pose msg)
             {
                         double r,p,y;
                         tf::Matrix3x3(tf::Quaternion(msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w)).getRPY(r,p,y);
-                        validStart = Start.setPosition(msg.position.x,msg.position.y,y,Width,Length,Depth,adore::mad::CoordinateConversion::DegToRad(HeadingResolution), figure3);
-                        //Start.print();
+                        if(OG.check_valid_position(msg.position.y,msg.position.x)){
+                            validStart = Start.setPosition(msg.position.x,msg.position.y,y,grid_height,grid_width,Depth,adore::mad::CoordinateConversion::DegToRad(HeadingResolution), figure3);
+                        }
+                        else{
+                            std::cout<<"Invalid Start Pose"<<std::endl;
+                        }
+                        Start.print();
             }  
-            void receiveEndPose(geometry_msgs::Pose msg)
+        void receiveEndPose(geometry_msgs::Pose msg)
             {
                         double r,p,y;
                         tf::Matrix3x3(tf::Quaternion(msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w)).getRPY(r,p,y);
-                        validEnd = End.setPosition(msg.position.x,msg.position.y,y,Width,Length,Depth, adore::mad::CoordinateConversion::DegToRad(HeadingResolution),  figure3);
-                        //End.print();
+                        if(OG.check_valid_position(msg.position.y,msg.position.x)){
+                            validEnd = End.setPosition(msg.position.x,msg.position.y,y,grid_height,grid_width,Depth, adore::mad::CoordinateConversion::DegToRad(HeadingResolution),  figure3);
+                        }
+                        else{
+                            std::cout<<"Invalid End Pose"<<std::endl;
+                        }
+                        End.print();
             }               
     };
 }
