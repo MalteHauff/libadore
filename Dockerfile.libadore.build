@@ -91,10 +91,10 @@ WORKDIR /tmp/${PROJECT}/${PROJECT}/build
 RUN cmake .. \
              -DBUILD_adore_TESTING=ON \
              -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-             -DCMAKE_BUILD_TYPE=Release \
+             -DCMAKE_BUILD_TYPE=RelWithDebInfo \
              -DCMAKE_INSTALL_PREFIX="install" \
              -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} && \
-    cmake --build . -v --config Release --target install -- -j $(nproc)
+    cmake --build . -v --config RelWithDebInfo --target install -- -j $(nproc)
 
 RUN cmake .. && cpack -G DEB && find . -type f -name "*.deb" | xargs mv -t . || true
 RUN mv CMakeCache.txt CMakeCache.txt.build

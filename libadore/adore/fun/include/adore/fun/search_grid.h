@@ -58,15 +58,20 @@ namespace adore
             void resize(int Width, int Length, int Depth=1)
             {
                 //Eigen::Matrix<T,Width,Length> test;
-                grid.clear();                
+                grid.clear();      
+                std ::cout<<"nh clear init"<<std::endl;          
                 matrix_2d.resize(Width,Length);
                 this->Length = Length;
                 this->Width = Width;
                 this->Depth = Depth;
+                std ::cout<<"nh befor loop "<<std::endl;
+                std ::cout<<Depth<<std::endl;
                 for (int i=0; i<Depth; i++)
                 {
+                    std ::cout<<i<<std::endl;
                     grid.push_back(matrix_2d);
                 }
+                std ::cout<<"nh after loop "<<std::endl;
             }
    
             

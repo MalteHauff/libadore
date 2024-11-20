@@ -58,7 +58,7 @@ namespace apps
             std::chrono::system_clock::time_point  end;        
             int grid_width = 80; //73;
             int grid_height = 20;//20;  
-            static const int HeadingResolution = 1;  //5
+            static const int HeadingResolution = 30;  //5
             static const int nH_Type = 3;  //non holonomic
             static const int H_Type = 2;  //holonomic
             int Depth;      
@@ -119,6 +119,7 @@ namespace apps
                 OG.resize(grid_height,grid_width,figure3);
                 std ::cout<<"og init"<<std::endl;
                 NH_GRID.resize(height,width,Depth);
+                std ::cout<<"nh grid init"<<std::endl;
                 h_A_star->setSize(height,width);
                 avg_time = 0.0;
                 iteration = 1;
@@ -128,10 +129,10 @@ namespace apps
             }
             void update()
         {
-            std::cout<<"start update"<<std::endl;
+            
             StartPose_subscreiber= node_->subscribe<geometry_msgs::Pose>("StartPose",1,&GraphSearch::receiveStartPose,this);
             EndPose_subscreiber= node_->subscribe<geometry_msgs::Pose>("EndPose",1,&GraphSearch::receiveEndPose,this);
-            std::cout<<"valid  " << validStart << validEnd<<iteration<<std::endl; 
+
 
             while(iteration<2 && validStart && validEnd)
             {
@@ -141,6 +142,7 @@ namespace apps
                 start = std::chrono::system_clock::now();
                 time1 = 0.0;
                 time2 = 0.0;
+                std::cout<<"next iteration"<<std::endl;
                    
                 //std::cout<<"\n"<<   cco->offlineCollisionTable.size()<<"\t"<<cco->offlineCollisionTable[0].size1()<<"\t"<<cco->offlineCollisionTable[0].size2();   
                 h_A_star->plan(&NH_GRID,&OG, cco, &Start,&End,HeadingResolution,1000, vehicleWidth, vehicleLength ,figure3,figure4,figure5);            
@@ -167,7 +169,7 @@ namespace apps
                         else{
                             std::cout<<"Invalid Start Pose"<<std::endl;
                         }
-                        Start.print();
+                        //Start.print();
             }  
         void receiveEndPose(geometry_msgs::Pose msg)
             {
@@ -179,7 +181,7 @@ namespace apps
                         else{
                             std::cout<<"Invalid End Pose"<<std::endl;
                         }
-                        End.print();
+                        //End.print();
             }               
     };
 }

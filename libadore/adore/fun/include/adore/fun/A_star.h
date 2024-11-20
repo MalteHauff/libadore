@@ -65,8 +65,10 @@ namespace adore
                 //https://www.boost.org/doc/libs/1_53_0/doc/html/boost/heap/fibonacci_heap.html
                 boost::heap::fibonacci_heap<Node<H_Type,int>*, boost::heap::compare<compare>> heap;
                 heap.push(Start);
+                std::cout<<"a_star not hybrid"<<std::endl;
                 while(!heap.empty())
                 {
+                    std::cout<<"a_star not hybrid in loop"<<std::endl;
                     Node<H_Type,int>* predecessor_node = heap.top();
                     if(grid->isClosed(predecessor_node))
                     {
@@ -87,8 +89,7 @@ namespace adore
                             return predecessor_node->get_G();
                         }
                         else
-                        {
-                           
+                        {   
                            evaluateSuccessors(predecessor_node, grid, og, End,&heap);
                         }
                     }

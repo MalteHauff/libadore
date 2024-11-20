@@ -33,38 +33,38 @@ namespace adore
        template <int TYPE, typename T>
        	class Node
 		{
-		private:
-        std::string RED= "LineColor=1.,0.,0.;LineWidth=3";
-        static const int N_suc = 3;
-        // H := Holonomic,   nH := non Holonomic
-        double dx_H[N_suc];
-        double dy_H[N_suc];
-        double dpsi_H[N_suc]; 
-        double R;   //Maximum Turning radius
-        double dA;  // Dubins Curve Angle
-        double G;   //cost so far
-        double H;   // cost to go        
-        int type;    
-        double cp; //cos(psi)
-        double sp; //sin(psi)
-        long double pi, TWO_PI;
+            private:
+            std::string RED= "LineColor=1.,0.,0.;LineWidth=3";
+            static const int N_suc = 3;
+            // H := Holonomic,   nH := non Holonomic
+            double dx_H[N_suc];
+            double dy_H[N_suc];
+            double dpsi_H[N_suc]; 
+            double R;   //Maximum Turning radius
+            double dA;  // Dubins Curve Angle
+            double G;   //cost so far
+            double H;   // cost to go        
+            int type;    
+            double cp; //cos(psi)
+            double sp; //sin(psi)
+            long double pi, TWO_PI;
 
 
 
-        
+            
 
-		public:
-        double C;  // total cost G + H
-        T x;
-        T y;
-        double psi;
-        bool isClosed;
-        bool isOpen;
-        bool isVisited;
-        bool isGloballyVisited;   
-        int index_depth;
-        int index_width;
-        int index_length;
+            public:
+            double C;  // total cost G + H
+            T x;
+            T y;
+            double psi;
+            bool isClosed;
+            bool isOpen;
+            bool isVisited;
+            bool isGloballyVisited;   
+            int index_depth;
+            int index_width;
+            int index_length;
         
               
 
@@ -77,14 +77,14 @@ namespace adore
             isOpen   = false;
             isVisited = false;
             isGloballyVisited = false;
-            R = 6.0;        //Maximum turning radius
+            R = 1.0;        //Maximum turning radius
             dA = adore::mad::CoordinateConversion::DegToRad(6.75);   //Dubins angle
-            dx_H[0] = 1.0;
-            dx_H[1] = 1.0;
-            dx_H[2] = 1.0;
-            dy_H[0] = 1.0;
+            dx_H[0] = 1.0; //1.0;
+            dx_H[1] = 1.0; //1.0;
+            dx_H[2] = 1.0; //1.0;
+            dy_H[0] = 1.0;//1.0;
             dy_H[1] = 0.0;
-            dy_H[2] = -1.0;    
+            dy_H[2] = -1.0; //-1.0;    
             dpsi_H[0] =  adore::mad::CoordinateConversion::DegToRad(45.0);
             dpsi_H[1] = 0.0;        
             dpsi_H[2] = adore::mad::CoordinateConversion::DegToRad(-45.0);
@@ -131,7 +131,7 @@ namespace adore
             return(((std::fmod(node->psi,2.0*PI) /headingResolution) == (std::fmod(this->psi,2.0*PI) /headingResolution)) 
                     && (int(node->y) == int(this->y)) && (int(node->x) == int(this->x)) ); 
         }
-        bool isEqual (Node* node, double headingResolution = 5.0, double tolerance = 0.10)
+        bool isEqual (Node* node, double headingResolution = 5.0, double tolerance = 1.0) //tolerance = 0.1
         {
             bool result = false;
             if(this->type == 2 && this->x == node->x && this->y == node->y )
@@ -198,9 +198,11 @@ namespace adore
                 }
                 return successors_h;
         }
+
         std::vector<Node< 3,  double>*>  updateSuccessors3D(adore::env::OccupanyGrid* og,adore::fun::CollisionCheckOffline* cco, long double HeadingResolutionRad)
         {
                 //this->print();
+                this->R = 5;
                 int gridWidth = og->Grid.rows();
                 int gridLength = og->Grid.cols();
                 int gridDepth = cco->offlineCollisionTable.size();                       

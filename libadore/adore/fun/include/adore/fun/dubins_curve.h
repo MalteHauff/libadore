@@ -129,6 +129,7 @@ namespace adore
                 double alpha = mod(Start->psi - theta, TWO_PI);
                 double beta = mod(End->psi - theta, TWO_PI);
                 double OptPathLength = curves(alpha,beta,d,PRINT);
+                //std::cout<<"dubin plan"<<std::endl;
                 if(cco != nullptr)
                 {
                 allCurvesToNodes(Start,End,og,cco, HeadingResolutionRad, figure);
@@ -301,8 +302,10 @@ namespace adore
             std::stringstream ss;
             int i= optIndex;
             path[i].curve.clear();
+            std::cout<<"befor loop"<<std::endl;
            // for (int i=0; i<N; ++i)
             {
+                std::cout<<"in loop"<<std::endl;
                 ss<<i;
                 if(path[i].status)
                 {

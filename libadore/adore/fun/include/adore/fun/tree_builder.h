@@ -76,13 +76,20 @@ namespace adore
             search.y = End->y;
             search.psi = End->psi;
             tree.push_back(search);
-            int starting_index = s.size();
+            int starting_index = s.size()-1;
+            std::cout<<"size : "<<starting_index<<"  size tree: "<<tree.size()<<std::endl;
+            int counter = 0;
+            double tolerance = 0.92;
+            std::cout << "End point : " << search.x << "/ "<<search.y<<std::endl;
             while(true)
             {
+                //std::cout<<"while interation"<<std::endl;
                 for(int i=starting_index; i>=0; --i)
                 {
-                    if(s[i].x == search.x && s[i].y == search.y)
+                    //std::cout << "Punkte : " << s[i].x << "/ "<<s[i].y<<std::endl;
+                    if(s[i].x == search.x && s[i].y == search.y)//(std::abs(s[i].x - search.x) < tolerance && std::abs(s[i].y - search.y) < tolerance)//(s[i].x == search.x && s[i].y == search.y)//TODO Vergleich
                     {
+                        //std::cout<<"equal point"<<std::endl;
                         index = i;
                         starting_index = i;
                         search.x = p[i].x;
@@ -92,10 +99,12 @@ namespace adore
                         break;
                     }
                 }
+                //std::cout<<"out of forLoop in build"<<std::endl;
                 if(search.x == Start->x && search.y == Start->y)
                 {
                     break;
                 }
+         
             }//while
             std::reverse(tree.begin(), tree.end());
             std::cout<<"\nTree size: "<<tree.size();

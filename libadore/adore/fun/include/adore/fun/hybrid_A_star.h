@@ -21,6 +21,7 @@
 #include <adore/fun/tree_builder.h>
 //#include <adore/mad/catmull_rom_splines.h>
 #include <adore/fun/trajectory_smoothing.h>
+#include <cmath>
 namespace adore
 {
 	namespace fun
@@ -41,6 +42,7 @@ namespace adore
             //ArrayFormGrid<adore::fun::Node<H_Type,int>> HA_GRID; //array format
             DubinsCurve dubins;
             A_Star a_star;
+            long int node_counter=0;
             long double HeadingResolutionRad;
             int iteration;
             struct compare
@@ -64,11 +66,13 @@ namespace adore
             }
             void plan(GRID<Node<nH_Type,double>>* grid,adore::env::OccupanyGrid* og, adore::fun::CollisionCheckOffline* cco,Node<nH_Type,double>* Start, Node<nH_Type,double>* End,int  HeadingResolution, int MAX_ITERATION , double vehicleWidth, double vehicleLength, DLR_TS::PlotLab::AFigureStub* figure =nullptr, DLR_TS::PlotLab::AFigureStub* figure1 =nullptr, DLR_TS::PlotLab::AFigureStub* figure2 =nullptr)
             {   
+                std::cout<<"start init algo"<<std::endl;
                 Tree.init();
                 iteration = 0;   
                 HeadingResolutionRad =  double(HeadingResolution) * pi/180.0000000000000;             
                 grid->initialize(); 
-                double H = cost2go(Start,End,&H_GRID,og);   
+            
+                double H = cost2go(Start,End,&H_GRID,og); 
                 Start->set_H(H); Start->isOpen = true; Start->isClosed = false;
                 //https://www.boost.org/doc/libs/1_53_0/doc/html/boost/heap/fibonacci_heap.html
                 boost::heap::fibonacci_heap<Node<nH_Type,double>*, boost::heap::compare<compare>> heap;
@@ -76,11 +80,17 @@ namespace adore
                 grid->replace(Start,HeadingResolutionRad);
                 int cc = 0;
                 std::vector<double> plot_x, plot_y;
+                int counter = 0;
 
                 std::vector<std::stringstream > ss;
                 while(!heap.empty())
                 {
                     Node<nH_Type,double>* predecessor_node = heap.top();
+                    counter++;
+                    if(predecessor_node->isCloseTo(End,10.0)) {
+                        std::cout<<"node counter: "<<counter<<std::endl;    
+                        predecessor_node->print();
+                    }
                     if(figure !=nullptr)
                     {                      
                         plot_x.push_back(predecessor_node->x);
@@ -96,22 +106,24 @@ namespace adore
                     {
                         grid->set_closed(predecessor_node,HeadingResolutionRad);
                         heap.pop();
-                        if(predecessor_node->isEqual(End,HeadingResolutionRad) || iteration > MAX_ITERATION)
+                        if(predecessor_node->isEqual(End,HeadingResolutionRad)) //|| iteration > MAX_ITERATION) //end is reached, or max iteration
                         {
+                            std::cout<<"Found path to goal, starting reconstructing of path"<<std::endl;
                             Tree.push_p(predecessor_node);
+                            std::cout<<"start build"<<std::endl;
                             Tree.build(Start,End,vehicleWidth, vehicleLength, figure);                            
                             std::cout<<"\nEnd is reached";
                             return;
-                        } //end is reached, or max iteration
-                        if(predecessor_node->isCloseTo(End,50.0))
+                        } 
+                        if(predecessor_node->isCloseTo(End,2.0))//isCloseTo(End,50.0))
                         {
+                            std::cout<<"start dubin path"<<std::endl;
                             dubins.plan(predecessor_node,End,og, cco, HeadingResolutionRad, figure);
                             if(dubins.isCollisionFree) 
                             {
-                            Tree.push_p(predecessor_node);
-                            Tree.build(Start,predecessor_node,vehicleWidth, vehicleLength, figure); 
-                            smoothing->get_pre_trajectory(og, &Tree.tree, &dubins.optPath.curve, vehicleWidth, vehicleLength, figure1,figure2);
-
+                                Tree.push_p(predecessor_node);
+                                Tree.build(Start,predecessor_node,vehicleWidth, vehicleLength, figure); 
+                                smoothing->get_pre_trajectory(og, &Tree.tree, &dubins.optPath.curve, vehicleWidth, vehicleLength, figure1,figure2);
                                 return;
                             }                           
                         }//close to end
@@ -131,9 +143,11 @@ namespace adore
                 double G ;
                 std::vector<Node< 3,  double>*> successors_nh;
                 successors_nh = node->updateSuccessors3D(og, cco ,HeadingResolutionRad);
-               for (int i=0; i<successors_nh.size(); i++)
+                for (int i=0; i<successors_nh.size(); i++)
                 {
+                    
                     //std::cout<<"\n"<<i<<"\t"<<!grid->isClosed(successors_nh[i],HeadingResolutionRad) <<"\t"<<node->hasEqualIndex(successors_nh[i],HeadingResolutionRad);
+                    //successors_nh[i]->print();
                     if(!grid->isClosed(successors_nh[i],HeadingResolutionRad) ||  node->hasEqualIndex(successors_nh[i],HeadingResolutionRad))
                     {
                         G = successors_nh[i]->get_G(node);
@@ -149,8 +163,10 @@ namespace adore
                             else if(node->hasEqualIndex(successors_nh[i],HeadingResolutionRad) && successors_nh[i]->C < node->C + 0.01)
                             {
                             }
-                           Tree.push_p(node);
-                           Tree.push_s(successors_nh[i]);                           
+                            Tree.push_p(node);
+                            Tree.push_s(successors_nh[i]);    
+                            node_counter++;
+                            //std::cout<<"node counter: "<<node_counter<<std::endl;                       
                             successors_nh[i]->isOpen = true;
                             successors_nh[i]->isClosed = false;
                             grid->replace(successors_nh[i],HeadingResolutionRad);
@@ -167,7 +183,7 @@ namespace adore
                 double dubinsPathLength = 0.0;
                 double nonHolonomicPath = 0.0;
                 dubinsPathLength = dubins.plan(Current,End, og);
-                nonHolonomicPath = a_star.plan(grid ,og, Current->nH2H() , End->nH2H()); 
+                nonHolonomicPath = std::abs(Current->x-End->x)+std::abs(Current->y-End->y);//a_star.plan(grid ,og, Current->nH2H() , End->nH2H()); 
                 return std::max(dubinsPathLength,nonHolonomicPath);
             }
 
