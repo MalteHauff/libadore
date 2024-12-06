@@ -37,10 +37,19 @@
 #include <stdint.h>
 #include <tf/tf.h>
 #include <iterator>
+#include <boost/container/vector.hpp>
 //#include <tf/quaterion.h>
 
 namespace adore
 {
+    struct Node_Lite
+            {
+                double x;
+                double y;
+                double psi;
+                double s;   //used only for smoothing
+            };
+    typedef boost::container::vector<Node_Lite> TrajectoryVector;
 namespace apps
 {
     /**
@@ -48,6 +57,7 @@ namespace apps
      */
     class GraphSearch
     {
+        private: 
         public:        //typedef boost::geometry::model::point<double,2,boost::geometry::cs::cartesian> Vector;
             DLR_TS::PlotLab::FigureStubFactory fig_factory;
             DLR_TS::PlotLab::AFigureStub* figure3;  
@@ -58,7 +68,7 @@ namespace apps
             std::chrono::system_clock::time_point  end;        
             int grid_width = 80; //73;
             int grid_height = 20;//20;  
-            static const int HeadingResolution = 30;  //5
+            static const int HeadingResolution = 45;  //5
             static const int nH_Type = 3;  //non holonomic
             static const int H_Type = 2;  //holonomic
             int Depth;      
@@ -127,12 +137,12 @@ namespace apps
                 
 
             }
-            void update()
+        void update()
         {
             
             StartPose_subscreiber= node_->subscribe<geometry_msgs::Pose>("StartPose",1,&GraphSearch::receiveStartPose,this);
             EndPose_subscreiber= node_->subscribe<geometry_msgs::Pose>("EndPose",1,&GraphSearch::receiveEndPose,this);
-
+            TrajectoryVector path;
 
             while(iteration<2 && validStart && validEnd)
             {
@@ -145,7 +155,7 @@ namespace apps
                 std::cout<<"next iteration"<<std::endl;
                    
                 //std::cout<<"\n"<<   cco->offlineCollisionTable.size()<<"\t"<<cco->offlineCollisionTable[0].size1()<<"\t"<<cco->offlineCollisionTable[0].size2();   
-                h_A_star->plan(&NH_GRID,&OG, cco, &Start,&End,HeadingResolution,1000, vehicleWidth, vehicleLength ,figure3,figure4,figure5);            
+                path = (boost::container::vector<adore::apps::GraphSearch::Node_Lite>) h_A_star->plan(&NH_GRID,&OG, cco, &Start,&End,HeadingResolution,1000, vehicleWidth, vehicleLength ,figure3,figure4,figure5);            
                 end = std::chrono::system_clock::now(); 
                 time1 += std::chrono::duration_cast<std::chrono::microseconds>(end-start).count();   
                 time2 += std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count(); 
@@ -156,7 +166,7 @@ namespace apps
                 iteration++;          
                 
             }
-
+            return;
         }
 
         void receiveStartPose(geometry_msgs::Pose msg)
@@ -175,6 +185,7 @@ namespace apps
             {
                         double r,p,y;
                         tf::Matrix3x3(tf::Quaternion(msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w)).getRPY(r,p,y);
+                        //std::cout<<msg.position.y<< "   "<<msg.position.x<<std::endl;
                         if(OG.check_valid_position(msg.position.y,msg.position.x)){
                             validEnd = End.setPosition(msg.position.x,msg.position.y,y,grid_height,grid_width,Depth, adore::mad::CoordinateConversion::DegToRad(HeadingResolution),  figure3);
                         }

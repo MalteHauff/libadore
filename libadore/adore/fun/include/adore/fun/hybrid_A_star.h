@@ -22,6 +22,8 @@
 //#include <adore/mad/catmull_rom_splines.h>
 #include <adore/fun/trajectory_smoothing.h>
 #include <cmath>
+#include <boost/container/vector.hpp>
+#include <adore/apps/graph_search.h>
 namespace adore
 {
 	namespace fun
@@ -33,6 +35,14 @@ namespace adore
 		{
             private:
             long double pi;
+                /*struct Node_Lite
+            {
+                double x;
+                double y;
+                double psi;
+                double s;   //used only for smoothing
+            };
+            typedef boost::container::vector<Node_Lite> TrajectoryVector;*/
             TrajectorySmoothing* smoothing;
             std::string RED= "LineStyle=none;PointSize=4;LineColor=1,0,0";
             static const int nH_Type = 3;  //non holonomic
@@ -64,7 +74,7 @@ namespace adore
             {
                 H_GRID.resize(Width, Length);
             }
-            void plan(GRID<Node<nH_Type,double>>* grid,adore::env::OccupanyGrid* og, adore::fun::CollisionCheckOffline* cco,Node<nH_Type,double>* Start, Node<nH_Type,double>* End,int  HeadingResolution, int MAX_ITERATION , double vehicleWidth, double vehicleLength, DLR_TS::PlotLab::AFigureStub* figure =nullptr, DLR_TS::PlotLab::AFigureStub* figure1 =nullptr, DLR_TS::PlotLab::AFigureStub* figure2 =nullptr)
+            TrajectoryVector plan(GRID<Node<nH_Type,double>>* grid,adore::env::OccupanyGrid* og, adore::fun::CollisionCheckOffline* cco,Node<nH_Type,double>* Start, Node<nH_Type,double>* End,int  HeadingResolution, int MAX_ITERATION , double vehicleWidth, double vehicleLength, DLR_TS::PlotLab::AFigureStub* figure =nullptr, DLR_TS::PlotLab::AFigureStub* figure1 =nullptr, DLR_TS::PlotLab::AFigureStub* figure2 =nullptr)
             {   
                 std::cout<<"start init algo"<<std::endl;
                 Tree.init();
@@ -81,21 +91,23 @@ namespace adore
                 int cc = 0;
                 std::vector<double> plot_x, plot_y;
                 int counter = 0;
+                TrajectoryVector path;
 
                 std::vector<std::stringstream > ss;
                 while(!heap.empty())
                 {
+                    std::cout<<"heap size "<<heap.size()<<std::endl;
                     Node<nH_Type,double>* predecessor_node = heap.top();
                     counter++;
                     if(predecessor_node->isCloseTo(End,10.0)) {
                         std::cout<<"node counter: "<<counter<<std::endl;    
                         predecessor_node->print();
                     }
-                    if(figure !=nullptr)
-                    {                      
-                        plot_x.push_back(predecessor_node->x);
-                        plot_y.push_back(predecessor_node->y);
-                    }
+                    //f(figure !=nullptr)
+                    //{                      
+                      //  plot_x.push_back(predecessor_node->x);
+                        //plot_y.push_back(predecessor_node->y);
+                    //}
                     
                     if(grid->isClosed(predecessor_node,HeadingResolutionRad))
                     {
@@ -111,20 +123,20 @@ namespace adore
                             std::cout<<"Found path to goal, starting reconstructing of path"<<std::endl;
                             Tree.push_p(predecessor_node);
                             std::cout<<"start build"<<std::endl;
-                            Tree.build(Start,End,vehicleWidth, vehicleLength, figure);                            
+                            path=(boost::container::vector<adore::fun::Hybrid_A_Star::Node_Lite>) Tree.build(Start,End,vehicleWidth, vehicleLength, figure);                            
                             std::cout<<"\nEnd is reached";
-                            return;
+                            return path;
                         } 
-                        if(predecessor_node->isCloseTo(End,2.0))//isCloseTo(End,50.0))
+                        if(predecessor_node->isCloseTo(End,50.0))//isCloseTo(End,5.0))
                         {
                             std::cout<<"start dubin path"<<std::endl;
-                            dubins.plan(predecessor_node,End,og, cco, HeadingResolutionRad, figure);
+                            dubins.plan(predecessor_node,End,og, cco, HeadingResolutionRad, figure, true);
                             if(dubins.isCollisionFree) 
                             {
                                 Tree.push_p(predecessor_node);
-                                Tree.build(Start,predecessor_node,vehicleWidth, vehicleLength, figure); 
+                                path = (boost::container::vector<adore::fun::Hybrid_A_Star::Node_Lite>) Tree.build(Start,predecessor_node,vehicleWidth, vehicleLength, figure); 
                                 smoothing->get_pre_trajectory(og, &Tree.tree, &dubins.optPath.curve, vehicleWidth, vehicleLength, figure1,figure2);
-                                return;
+                                return path;
                             }                           
                         }//close to end
                         evaluateSuccessors(predecessor_node,grid,&H_GRID,og,cco,End,&heap,HeadingResolutionRad);
@@ -134,6 +146,7 @@ namespace adore
                 }
                 std::cout<<"\nGOAL IS UNREACHABLE";
                 iteration++;
+                return path;
 
             }
             private:
@@ -183,7 +196,9 @@ namespace adore
                 double dubinsPathLength = 0.0;
                 double nonHolonomicPath = 0.0;
                 dubinsPathLength = dubins.plan(Current,End, og);
-                nonHolonomicPath = std::abs(Current->x-End->x)+std::abs(Current->y-End->y);//a_star.plan(grid ,og, Current->nH2H() , End->nH2H()); 
+                double x_square = (Current->x-End->x) * (Current->x-End->x);
+                double y_square = (Current->y-End->y) * (Current->y-End->y);
+                nonHolonomicPath = std::sqrt(x_square + y_square);//std::abs(Current->x-End->x)+std::abs(Current->y-End->y);//a_star.plan(grid ,og, Current->nH2H() , End->nH2H()); 
                 return std::max(dubinsPathLength,nonHolonomicPath);
             }
 

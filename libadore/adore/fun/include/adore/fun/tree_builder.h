@@ -15,6 +15,7 @@
 #pragma once
 #include <boost/container/vector.hpp>
 #include <adore/apps/if_plotlab/plot_shape.h>
+#include <adore/apps/graph_search.h>
 namespace adore
 {
 	namespace fun
@@ -30,17 +31,17 @@ namespace adore
         std::string GRAY= "LineColor=0.7,0.7,0.7;LineWidth=1";
 
         public:
-        struct Node_Lite
+        /*struct Node_Lite
         {
             double x;
             double y;
             double psi;
             double s;   //used only for smoothing
-        };
-        typedef boost::container::vector<Node_Lite> TrajectoryVector;
-        TrajectoryVector p;
-        TrajectoryVector s;
-        TrajectoryVector tree;
+        };*/
+        //typedef boost::container::vector<Node_Lite> TrajectoryVector;
+        adore::TrajectoryVector p;
+        adore::TrajectoryVector s;
+        adore::TrajectoryVector tree;
 
         TreeBuilder()
         {
@@ -68,7 +69,7 @@ namespace adore
             tmp.psi = node->psi;
             s.push_back(tmp);
         }   
-        void build(Node<TYPE,T>* Start, Node<TYPE,T>* End,double vehicleWidth, double vehicleLength, DLR_TS::PlotLab::AFigureStub* figure =nullptr)
+        TrajectoryVector build(Node<TYPE,T>* Start, Node<TYPE,T>* End,double vehicleWidth, double vehicleLength, DLR_TS::PlotLab::AFigureStub* figure =nullptr)
         {
             int index = 0;
             Node_Lite search;
@@ -124,6 +125,7 @@ namespace adore
                 }
                 figure->plot("#Tree",&x[0],&y[0],1.1,x.size(),RED);
             }
+            return tree;
         }     
 
         };

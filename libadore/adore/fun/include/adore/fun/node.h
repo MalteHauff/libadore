@@ -77,8 +77,8 @@ namespace adore
             isOpen   = false;
             isVisited = false;
             isGloballyVisited = false;
-            R = 1.0;        //Maximum turning radius
-            dA = adore::mad::CoordinateConversion::DegToRad(6.75);   //Dubins angle
+            R = 2.0;        //Maximum turning radius
+            dA = adore::mad::CoordinateConversion::DegToRad(45);//(2*6.75);   //Dubins angle 6.75
             dx_H[0] = 1.0; //1.0;
             dx_H[1] = 1.0; //1.0;
             dx_H[2] = 1.0; //1.0;
@@ -99,9 +99,11 @@ namespace adore
         void update_index(int Width, int Length, int Depth, double HeadingResolutionRad)
         {
             index_depth = int( mad::ArrayMatrixTools::mod(this->psi,TWO_PI) /HeadingResolutionRad);
+            std::cout<<"index depth : "<<index_depth<<std::endl;
             index_width = int(this->y);
             index_length = int(this->x);
             index_depth = std::min(index_depth, Depth-1);
+            std::cout<<"min depth : "<<index_depth<<std::endl;
         }
         bool setPosition(double x, double y, double psi ,int Width, int Length, int Depth, double HeadingResolutionRad, DLR_TS::PlotLab::AFigureStub* figure =nullptr)
         {
@@ -131,7 +133,7 @@ namespace adore
             return(((std::fmod(node->psi,2.0*PI) /headingResolution) == (std::fmod(this->psi,2.0*PI) /headingResolution)) 
                     && (int(node->y) == int(this->y)) && (int(node->x) == int(this->x)) ); 
         }
-        bool isEqual (Node* node, double headingResolution = 5.0, double tolerance = 1.0) //tolerance = 0.1
+        bool isEqual (Node* node, double headingResolution = 5.0, double tolerance = 0.1) //tolerance = 0.1
         {
             bool result = false;
             if(this->type == 2 && this->x == node->x && this->y == node->y )
@@ -178,7 +180,7 @@ namespace adore
 
         std::vector<Node< 2,  int>*>  updateSuccessors2D(adore::env::OccupanyGrid* og)
         {
-            
+                std::cout<< "expanding 2D"<<std::endl;
                 int gridWidth = og->Grid.rows();
                 int gridLength = og->Grid.cols();
                 std::vector<Node< 2,  int>*> successors_h; 
@@ -202,6 +204,7 @@ namespace adore
         std::vector<Node< 3,  double>*>  updateSuccessors3D(adore::env::OccupanyGrid* og,adore::fun::CollisionCheckOffline* cco, long double HeadingResolutionRad)
         {
                 //this->print();
+                std::cout<<"expanding..."<<std::endl;
                 this->R = 5;
                 int gridWidth = og->Grid.rows();
                 int gridLength = og->Grid.cols();
@@ -216,10 +219,17 @@ namespace adore
                 tmp->y = this->y + this->R*(sp*this->dA);
                 tmp->psi = this->psi;
                 tmp->set_G(this->G);
+
                 tmp->update_index(gridWidth, gridLength, gridDepth,HeadingResolutionRad);
                 if(tmp->x >= 0.0 && tmp->x <gridLength && tmp->y>=0.0 && tmp->y< gridWidth && isCollisionFree(tmp,og, cco, HeadingResolutionRad))
                 {
+                    //std::cout<<"node 1   : ";
+                    //tmp->print();
                     successors_nh.push_back(tmp); 
+                }
+                else{
+                    std::cout<<"node 1 not accepted  : ";
+                    tmp->print();
                 }
                 //---                
                 tmp1->x = this->x + this->R*(std::sin(this->psi+this->dA)-sp);
@@ -229,7 +239,13 @@ namespace adore
                 tmp1->update_index(gridWidth, gridLength, gridDepth,HeadingResolutionRad);
                 if(tmp1->x >= 0.0 && tmp1->x <gridLength && tmp1->y>=0.0 && tmp1->y< gridWidth && isCollisionFree(tmp1,og, cco, HeadingResolutionRad))
                 {
+                    //std::cout<<"node 2   : ";
+                    //tmp1->print();
                     successors_nh.push_back(tmp1);
+                }
+                else{
+                    std::cout<<"node 2 not accepted  : ";
+                    tmp1->print();
                 }
                 //---                
                 tmp2->x = this->x + this->R*(-std::sin(this->psi-this->dA)+sp);
@@ -239,9 +255,15 @@ namespace adore
                 tmp2->update_index(gridWidth, gridLength, gridDepth,HeadingResolutionRad);
                 if(tmp2->x >= 0.0 && tmp2->x <gridLength && tmp2->y>=0.0 && tmp2->y< gridWidth && isCollisionFree(tmp2,og, cco, HeadingResolutionRad))
                 {
+                    //std::cout<<"node 3   : ";
+                    //tmp2->print();
                     successors_nh.push_back(tmp2);
                     //successors_nh.back()->print();
                 }  
+                else{
+                    std::cout<<"node 3 not accepted  : ";
+                    tmp2->print();
+                }
                 return successors_nh;      
             }
             
@@ -259,7 +281,7 @@ namespace adore
                 Y = int(node->y) + bg::get<1>(cco->offlineCollisionTable[index_psi](index_x,index_y)[i]);
                 if(X >= 0 && X < gridLength && Y >= 0 && Y < gridWidth)
                 {
-                    if(og->Grid(Y, X)>0.900)
+                    if(og->Grid(Y, X)>0.900 || og->Grid(Y, X) < 0.0)
                     {                      
                         return false;
                     }

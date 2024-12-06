@@ -340,7 +340,7 @@ namespace adore
                 Y = int(point->y) + bg::get<1>(cco->offlineCollisionTable[index_psi](index_x,index_y)[i]);
                 if(X >= 0 && X < gridLength && Y >= 0 && Y < gridWidth)
                 {
-                    if(og->Grid(Y, X)>0.900)
+                    if(og->Grid(Y, X)>0.900 ||  og->Grid(Y, X)<0.0)
                     {                      
                         return false;
                     }
@@ -371,7 +371,7 @@ namespace adore
                 y.push_back(path [optIndex].curve[i].y);
                 psi.push_back(path [optIndex].curve[i].psi);
             }
-             figure->plot("#d_c",x.data(),y.data(), 1.2, size, color[1]);                   
+            figure->plot("#d_c",x.data(),y.data(), 1.2, size, color[1]);                   
         }     
 
              

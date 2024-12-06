@@ -63,10 +63,10 @@ namespace adore
                 matrix_2d.resize(Width,Length);
                 this->Length = Length;
                 this->Width = Width;
-                this->Depth = Depth;
+                this->Depth = Depth;//Depth;
                 std ::cout<<"nh befor loop "<<std::endl;
                 std ::cout<<Depth<<std::endl;
-                for (int i=0; i<Depth; i++)
+                for (int i=0; i<this->Depth; i++)
                 {
                     std ::cout<<i<<std::endl;
                     grid.push_back(matrix_2d);
@@ -105,7 +105,7 @@ namespace adore
             }            
             void replace(Node<H_Type,int>* node)
             {
-                grid[0](node->y, node->x) = *node;
+                grid[0](node->y, node->x) =*node;
             }
             bool isClosed(Node<nH_Type,double>* node,double HeadingResolutionRad)
             {

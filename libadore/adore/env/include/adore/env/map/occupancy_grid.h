@@ -76,7 +76,7 @@ namespace adore
                         for(int c=0; c<Grid.cols(); c++)
                         {
                             if(msg->data[r*Grid.cols()+c]==0){
-                                Grid(r,c) = 100;//msg->data[r*Grid.cols()+c];
+                                Grid(r,c) = 1;//msg->data[r*Grid.cols()+c];
                             }
                             else if(msg->data[r*Grid.cols()+c]==-2){
                                 Grid(r,c) = 0;//msg->data[r*Grid.cols()+c];
@@ -208,11 +208,19 @@ namespace adore
                     y = x_o  *sin(theta) + y_o  * cos(theta) ;
                 } 
                 bool check_valid_position(int row, int col){
-                    if(! point_inside(row, col)) return false;
+                    //std::cout<<"start check "<<std::endl;
+                    if(! point_inside(row, col)) {
+                        //std::cout<<"Point is not inside the recorded area"<<std::endl;
+                        return false;
+                    }
+                    //std::cout<<" row col: " <<Grid(row,col)<<std::endl;
+                    //std::cout<<" col row: " <<Grid(col, row)<<std::endl;
                     return Grid(row,col) == 0;
                 }
                 bool point_inside(int row, int col){
-                    return row >= 0 && row < width && col >= 0 && col <= height;
+                    //return row >= 0 && row < width && col >= 0 && col <= height;
+                    //std::cout<< "point inside: row "<< row << "  height  " << height << "  col  " << col << " width  " << width<<std::endl;
+                    return row >= 0 && row < height && col >= 0 && col <= width;
                 }          
             private:
                 std::string GREEN= "LineColor=0.,1.,0.;LineWidth=5";
@@ -254,7 +262,7 @@ namespace adore
                             ss.clear();
                             ss.str("");
                             ss << "f"<<r*Grid.cols()+c;
-                            if(Grid(r,c)==100) {
+                            if(Grid(r,c)==1) {
                                 PLOT::plotPosition(ss.str(),c,r,figure,RED,0.1);
                             }
                             //std::cout<<"\n"<<r<<"\t"<<c<<"\t"<<r*Grid.cols()+c;
